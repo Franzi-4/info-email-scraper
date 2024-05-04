@@ -1,0 +1,41 @@
+import re
+import requests
+from urllib.parse import urlsplit
+from collections import deque
+from bs4 import BeautifulSoup
+import pandas as pd
+from google.colab import files
+
+url_file_name = '/content/url.csv'  # Path to the CSV file in your Google Colab session
+url_file_name_extension = url_file_name[-3:]
+header = 0 if url_file_name_extension == 'csv' else None
+original_url = pd.read_csv(url_file_name, header=header, names=['url'])['url'].tolist()
+
+unscraped = deque(original_url)
+emails = set()
+
+# Create a session object to manage and persist settings across requests
+session = requests.Session()
+session.max_redirects = 10
+
+while len(unscraped):
+    url = unscraped.popleft()
+    parts = urlsplit(url)
+
+    print("Crawling URL %s" % url)
+    try:
+        response = session.get(url, allow_redirects=True, timeout=10)
+    except requests.exceptions.TooManyRedirects:
+        print("Too many redirects: %s" % url)
+        continue
+    except (requests.exceptions.MissingSchema, requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        print("Request failed: %s" % url)
+        continue
+
+    new_emails = set(re.findall(r"[a-z0-9\.\-+_]+@[a-z0-9\.\-+_]+\.com", response.text, re.I))
+    emails.update(new_emails)
+
+df = pd.DataFrame(list(emails), columns=["Email"])
+df.to_csv('email.csv', index=False)
+
+files.download("email.csv")
