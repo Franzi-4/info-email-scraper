@@ -38,4 +38,4 @@ while len(unscraped):
 df = pd.DataFrame(list(emails), columns=["Email"])
 df.to_csv('email.csv', index=False)
 
-files.download("email.csv")
+files.download("mails.csv")
