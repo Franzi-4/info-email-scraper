@@ -1,2 +1,2 @@
 # info-email-scraper
-Scrapes emails from websites, runs in Google Colab
+Scrapes emails from websites
