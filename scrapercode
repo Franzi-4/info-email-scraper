@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 from google.colab import files
 
-url_file_name = '/content/url.csv'  # Path to the CSV file in your Google Colab session
+url_file_name = '/content/url.csv'
 url_file_name_extension = url_file_name[-3:]
 header = 0 if url_file_name_extension == 'csv' else None
 original_url = pd.read_csv(url_file_name, header=header, names=['url'])['url'].tolist()
